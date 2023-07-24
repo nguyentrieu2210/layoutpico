@@ -1,0 +1,176 @@
+/* 
+    Nested Rules:
+        Trong SCSS ta có thể viết CSS lồng nhau 
+        VD minh họa:
+            .btn {
+                .title {...}
+                .content {...}
+            }
+
+    Nested Properties: Trong SCSS ta có thể áp dụng quy tắc lồng nhau cho các thuộc tính cho có chung phần tiền tố
+        Vd minh họa:
+                .btn {
+                    .title {
+                        font: {
+                            weight: bold;
+                            size: 40px;
+                        }
+                    }
+                    .content {...}
+                }
+
+    @at-root: Trong SCSS khi ta thêm @at-root vào trước 1 class được nằm lồng bên trong 1 class nào đó thì khi đó class này sẽ được định nghĩa lại ở root Document(được định nghĩa ra bên ngoài và nó tương đương với cấp cao nhất)
+        Vd minh họa: 
+            .btn{
+                .title{...}
+                @at-root .content{...}
+            }
+            <==>
+            .btn .title {...}
+            .content{...}
+
+    Parent Selector &: Khi ta sử dụng kí tự & này ta sẽ có $ <==> class cha của nó
+        Vd minh họa: 
+        vd1:
+            .product{
+                .product-item{...}
+            }
+            <==>
+            .product{
+                .&-item{...}
+            }
+        Vd2: 
+            .product{...}
+            .product:hover{...}
+            <==>
+            .product{
+                ...
+                &:hover{...}
+            }
+
+    Variables: Ta có thể khai báo biến gán cho nó giá trị ($name_var) khi sử dụng thì gọi tới biến này. Khi có sự thay đổi ta sẽ dễ dàng kiểm soát code hơn 
+            Vd minh họa: 
+                $theme_color: red;
+                .title { color: $theme_color; }
+                .content { background: $theme_color; }
+
+    Data Types: 
+            - Numbers: 
+                + Có thể sử dụng thoải mái các phép toán (vì đây là thao tác với biến)
+                + Numbers trong SCSS có 2 thành phần là phần số và phần đơn vị 
+                + Numbers có thể không cần có đơn vị 
+                + Và chúng cũng có thể trộn lẫn các đơn vị với nhau
+                + Giống như JS, SCSS cũng không phân biệt số nguyên và số thập phân
+                + CSS không hỗ trợ các đơn vị phức tạp ==> Ta luôn có thể sử dụng @debug để kiểm đơn vị của bất kì biến hay biểu thức nào 
+                    Vd minh họa: @debug 1in+6px; (1in tương đương với 96px nên kết quả là 102px hoặc 1.0625in)
+                    Lưu ý: nó chỉ thể thực hiện phép toán khi các đơn vị  của các phần tử có thể đổi sang nhau (cùng  1 kiểu loại đơn vị)
+                    vd minh họa: @debug 1in + 1s; (ở đây sẽ báo lỗi vì in không thể chuyển đổi sang giây)
+            - Strings: 
+            - Colors
+            - Lists: (liên tưởng đến tốc kí)
+            - Maps: 
+                Vd minh họa: 
+                    $style: (
+                        'font-size': 16px,
+                        'color': 'red'
+                    )
+                    h1{
+                        color: map-get($style, 'color');
+                        font-size: map-get($style, 'font-size';
+                    }
+            - True or False: 
+            - Null
+            - Function
+    @debug: Giống hệt console.log()
+
+    Interpolation (giống như String Template) cú pháp là ...#{...}...
+        Vd minh họa: 
+            $item: 'item-cart';
+            .product-#{$item} {...}
+        <==>
+        .product-item-cart {...}
+    
+    Vòng For trong SCSS
+        @for $i from 1 to 6 {
+            .text#{7-$i} {
+                font-size: $i * 1.5rem;
+            }
+        }
+
+    Biến thì thường được định nghĩa ở bên ngoài (variables.scss)
+    - Để sử dụng thì ta import nó vào (@import '...'; đường dẫn)
+
+    MIXIN: là 1 khối gồm 1 số thuộc tính để tạo kiểu (style cho 1 đối tượng chung nào đấy)
+    - Cú pháp khai báo: 
+        + @mixin mixin_name {...}
+        + Mixin cũng có thể nhân tham số đầu vào $mixin mixin_name($title_color, $border_color, ...) {...}
+    - Sử dụng mixin:
+        Vd minh họa: 
+            h1 {
+                @include mixin_name;
+                ...
+            }
+        Mixin cũng có thể nhân tham số truyền vào (vd: @include mixin_name(red, green);)
+
+    Extend: Kế thừa lại các thuộc tính (kế thừa bao nhiêu cũng được)
+            Vd minh họa: 
+                .text-product{
+                    color: red;
+                    font-size: 13px;
+                }
+                .boder-product{
+                    border: 1px solid #333;
+                }
+                .product{
+                    @extend .text-product;
+                    @extend .border-product;
+                    display:block;
+                }
+
+    Các biểu thức điều kiện, vòng lặp
+        - if - else 
+            Vd minh họa: 
+                if($seenWidth>500px) {
+                    h1 {...}
+                }else{
+                    ...
+                }
+            Nếu có nhiều trường hợp hơn thì ta lại lồng if-else vào else
+        - for
+            Vd minh họa: 
+                for $i from 1 through 6 {
+                    .slider-item-#{$i} {...}
+                }
+        - for-each: 
+
+    Hàm 
+        - Khai báo: @function nameFunc ($ts1, $ts2, ...) {
+                        ...
+                        @return ...;
+                    }
+        - Sử dụng: 
+            Vd minh họa: 
+                h1{
+                    width: nameFunc(200px, 500px);
+                }
+    
+    HotReload: Chạy thực tế
+    Build Projedct For SASS
+        - Step 1: npm init
+        - Step 2: npm install node-sass --save-dev
+        - Step 3: npm install browser-sync (tự động reload lại trình duyệt khi ta thay đổi code SASS)
+        - Step 4: npm install onchange --save-dev
+        - Step 5: npm run install npm-run-all --save-dev
+        - Step 6: Vào trong file package.json tại mục scripts và thêm dòng 
+            ==> "scss": "node-sass --watch sass/style.scss css/app.css --output-style nested"
+            Trong đó: 
+                + sass/style.scss là đường dẫn vào file scss muốn compile
+                + css/app.css là tạo ra file muốn compile từ SCSS sang có đường dẫn như kia và tên là app.css
+                + nested là kiểu compile (đơn giản nhất)
+        - Step 7: Chạy câu lệnh npm run scss 
+                Trong đó: 
+                    + scss là bí danh được đặt ở trong file package.json
+                    
+        
+
+*/
